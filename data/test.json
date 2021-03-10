@@ -1,0 +1,26 @@
+[
+  {
+    "telco": "02",
+    "moTime": "13/11/2020 09:05:57",
+    "cmdCode": "DK",
+    "msisdn": "84846847556",
+    "shortcode": "5656",
+    "info": "DK DNC"
+  },
+  {
+    "telco": "04",
+    "moTime": "13/11/2020 09:30:21",
+    "cmdCode": "DK",
+    "msisdn": "84976789441",
+    "shortcode": "5656",
+    "info": "DK DNC"
+  },
+  {
+    "telco": "04",
+    "moTime": "13/11/2020 08:00:44",
+    "cmdCode": "HUY",
+    "msisdn": "84846847556",
+    "shortcode": "5656",
+    "info": "DK DNC"
+  }
+]
