@@ -4,7 +4,7 @@ const creds = require('../config/client_secret.json');
 const personals = require('../data/personals.json');
 
 // const sheetId = '1qSTyEegpP0XKmKT5jbHiojdLfFY222Trc_GErxpkLgk';
-const sheetId = '1qSTyEegpP0XKmKT5jbHiojdLfFY222Trc_GErxpkLgk';
+const sheetId = '14KZIf7L4vZ4lkbmiJL3pna-agUeWhXMvWi_zdr4Wt5Y';
 
 async function accessSpreadSheet() {
   try {
@@ -16,21 +16,21 @@ async function accessSpreadSheet() {
     await sheet.setHeaderRow(['Nội dung']);
     // get rows
     const rows = await sheet.getRows();
-    // for (const row of rows) {
-    //   const content = row['Nội dung'];
-    //   if (!content) await row.delete();
+    for (const row of rows) {
+      const content = row['Nội dung'];
+      if (!content) await row.delete();
 
-    //   if (checkPersonalizeTags(content)) {
-    //     await new Promise((resolve, reject) => {
-    //       row['Nội dung'] = mergeText(content);
-    //       row.save();
-    //       setTimeout(() => {
-    //         console.log(`Updated: ${content}`);
-    //         resolve(`Update success row ${content}`);
-    //       }, 1500);
-    //     });
-    //   }
-    // }
+      if (checkPersonalizeTags(content)) {
+        await new Promise((resolve, reject) => {
+          row['Nội dung'] = mergeText(content);
+          row.save();
+          setTimeout(() => {
+            console.log(`Updated: ${content}`);
+            resolve(`Update success row ${content}`);
+          }, 1500);
+        });
+      }
+    }
 
     logger.info('edit spread sheet done!');
   } catch (err) {

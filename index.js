@@ -12,7 +12,7 @@ const camelcaseRequest = require('./middlewares/camelCaseRequest');
 const snakecaseResponse = require('./middlewares/snakeCaseResponse');
 
 require('dotenv').config();
-// require('./models');
+require('./models');
 
 const app = express();
 
@@ -40,8 +40,9 @@ app.use(
 );
 
 require('./routes')(app);
-require('./services/sheets').accessSpreadSheet();
-// require('./services/call').getCallBlacklist();
+// require('./services/sheets').accessSpreadSheet();
+// require('./services/call').exportExcel();
+// require('./services/test').scheduleRequest();
 
 app.use(errorHandler);
 
