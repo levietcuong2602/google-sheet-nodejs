@@ -1,12 +1,6 @@
-const axios = require('axios');
 const CryptoJS = require('crypto-js');
 const uuid = require('uuid').v4;
 const moment = require('moment');
-
-const CustomError = require('../errors/CustomError');
-const statusCode = require('../errors/statusCode');
-const { logger } = require('../utils/logger');
-const { generateRandomString } = require('../utils/string');
 
 const {
   DOMAIN_SHOPEE_PAYMENT,
@@ -16,15 +10,37 @@ const {
   STORE_EXT_ID_SHOPEE,
 } = process.env;
 
-const shopeePayment = async ({}) => {
+const create_payment = async ({
+  config,
+  money,
+  bank_code,
+  callback_url,
+  desc,
+  provider,
+  token,
+  request_id,
+}) => {
+  console.log(
+    '[shopee_payment][create_payment] params: ',
+    JSON.stringify({
+      config,
+      money,
+      bank_code,
+      callback_url,
+      desc,
+      provider,
+      token,
+      request_id,
+    }),
+  );
   try {
     const dataBody = {
-      request_id: generateRandomString(16),
-      amount: 10000000, // amount real x 100
+      request_id,
+      amount: money * 100, // amount real x 100
       currency: 'VND',
       merchant_ext_id: MERCHANT_EXT_ID_SHOPEE, // mã định danh đối tác
       store_ext_id: STORE_EXT_ID_SHOPEE, // mã định danh cửa hàng
-      payment_reference_id: generateRandomString(16), // mã hóa đơn
+      payment_reference_id: request_id, // mã hóa đơn
       expiry_time: Math.floor(
         moment()
           .add(20, 'minutes')
@@ -42,7 +58,7 @@ const shopeePayment = async ({}) => {
       'X-Airpay-Req-H': signature,
     };
     logger.info(
-      '[shopeePayment] request: ',
+      '[shopee_payment][create_payment] request: ',
       JSON.stringify({ headers, dataBody, hash }),
     );
     const { data } = await axios({
@@ -51,16 +67,39 @@ const shopeePayment = async ({}) => {
       headers,
       data: dataBody,
     });
-    logger.info('[shopeePayment] result: ', JSON.stringify(data));
+    logger.info(
+      '[shopee_payment][create_payment] result: ',
+      JSON.stringify(data),
+    );
     if (data.errcode === 0) {
-      // thành công
-      return data;
+      return {
+        error: 0,
+        link: data.qr_url,
+        request_id: data.request_id,
+        qr_content: data.qr_content,
+      };
     }
-
-    throw new CustomError(statusCode.PAYMENT_SHOPEE_FAILURE, data.debug_msg);
   } catch (error) {
-    throw new CustomError(statusCode.PAYMENT_SHOPEE_ERROR, error.message);
+    return { error: 1, message: error.message };
   }
+
+  return { error: 1, message: 'Thanh toán không thành công' };
 };
 
-module.exports = { shopeePayment };
+const verified_data = async params => {
+  logger.info(
+    '[shopee_payment][verified_data] params: ',
+    JSON.stringify(params),
+  );
+};
+
+function getConfig(config) {
+  return {
+    app_id: config['zalopay app_id'],
+    key1: config['zalopay key 1'],
+    key2: config['zalopay key 2'],
+    base: config['zalopay base'],
+  };
+}
+
+module.exports = { create_payment, verified_data, getConfig };
